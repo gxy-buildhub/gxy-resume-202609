@@ -11,20 +11,37 @@
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
-        /* 全局丝滑滚动 */
         html {
             scroll-behavior: smooth;
         }
         body {
             background-color: #f8f9fa;
             padding: 40px 0;
+            cursor: pointer;
+            overflow-x: hidden;
         }
+        /* 鼠标光圈：缩小、收敛、柔和 */
+        .cursor-glow {
+            position: fixed;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(40,90,180,0.22) 0%, rgba(40,90,180,0) 70%);
+            pointer-events: none;
+            transform: translate(-50%,-50%);
+            z-index: 9999;
+            animation: glowPulse 1.8s ease-out infinite;
+        }
+        @keyframes glowPulse {
+            0% { transform: translate(-50%,-50%) scale(0.6); opacity: 0.8; }
+            100% { transform: translate(-50%,-50%) scale(1.2); opacity: 0; }
+        }
+
         .container {
             max-width: 840px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        /* 中英文按钮优化 */
         .lang-switch {
             text-align: right;
             margin-bottom: 20px;
@@ -48,11 +65,10 @@
             background: #f0f4f9;
         }
 
-        /* 头部 动态幻光蓝渐变动画 */
         .header-card {
-            background: linear-gradient(110deg, #f5f8fc, #e8f0fa, #edf2fb, #e8f0fa, #f5f8fc);
-            background-size: 300% 300%;
-            animation: gradientFlow 8s ease infinite;
+            background: linear-gradient(110deg, #e8f0fa, #f5f8fc, #edf2fb, #f5f8fc, #e8f0fa);
+            background-size: 400% 400%;
+            animation: meteorFlow 10s linear infinite;
             border-radius: 12px;
             padding: 30px;
             display: flex;
@@ -62,14 +78,12 @@
             margin-bottom: 28px;
             transition: all 0.4s ease;
         }
-        /* 头部流光动画关键帧 */
-        @keyframes gradientFlow {
+        @keyframes meteorFlow {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* 证件照 */
         .avatar {
             width: 110px;
             height: 135px;
@@ -94,7 +108,6 @@
             margin-bottom: 15px;
             letter-spacing: 0.3px;
         }
-        /* 联系方式 增加下划线 */
         .contact {
             display: flex;
             flex-wrap: wrap;
@@ -106,9 +119,17 @@
             text-decoration: underline;
             text-underline-offset: 4px;
             text-decoration-color: #b8c8e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .contact span:hover {
+            transform: scale(1.12);
+            display: inline-block;
+            text-decoration-color: #407bdd;
+            text-decoration-thickness: 2px;
+            color: #407bdd;
         }
 
-        /* 内容卡片 + 滚动淡入 + 悬浮放大发光效果 */
         .content-card {
             background: #ffffff;
             border-radius: 12px;
@@ -123,23 +144,58 @@
             opacity: 1;
             transform: translateY(0);
         }
-        /* 电脑端悬浮：轻微放大 + 灰边蓝光突出 */
         @media (min-width: 769px) {
             .content-card:hover {
-                transform: translateY(-3px) scale(1.02);
-                box-shadow: 0 8px 20px rgba(64, 123, 221, 0.15), 0 0 15px rgba(184, 200, 224, 0.3);
+                transform: translateY(-4px) scale(1.03);
+                box-shadow: 0 10px 24px rgba(64, 123, 221, 0.15), 0 0 12px rgba(40, 90, 180, 0.2);
             }
         }
 
-        /* 板块标题 */
+        /* ========== 标题：柔和单次扫光，不循环、不刺眼 ========== */
         .section-title {
+            position: relative;
             font-size: 18px;
             font-weight: 600;
             color: #2c3e50;
             padding-left: 12px;
-            border-left: 3px solid #407bdd;
             margin-bottom: 20px;
+            overflow: hidden;
         }
+        /* 左侧蓝色竖杠 */
+        .section-title::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 2px;
+            bottom: 2px;
+            width: 3px;
+            background: #407bdd;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        /* 柔和蓝光扫光层：单次触发，不循环 */
+        .section-title::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            background: linear-gradient(90deg, rgba(64,123,221,0.22), rgba(64,123,221,0));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            filter: blur(1px);
+            opacity: 0;
+        }
+        /* 鼠标进入板块：竖杠轻微微光 + 单次扫光，不循环呼吸 */
+        .content-card:hover .section-title::before {
+            box-shadow: 0 0 4px #407bdd, 0 0 8px rgba(64,123,221,0.3);
+        }
+        .content-card:hover .section-title::after {
+            width: 100%;
+            opacity: 1;
+        }
+
         .timeline-item {
             margin-bottom: 20px;
         }
@@ -164,7 +220,6 @@
             color: #86909c;
             margin-bottom: 10px;
         }
-        /* 自定义列表样式 */
         .item-content ul {
             list-style: none;
             padding-left: 0;
@@ -183,15 +238,12 @@
             left: 0;
             color: #407bdd;
         }
-        /* 数字高亮 */
         .highlight {
             color: #407bdd;
             font-weight: 600;
         }
-        /* 双语控制 */
         .en { display: none; }
         .zh { display: block; }
-        /* 页脚样式 */
         .footer {
             text-align: center;
             padding: 20px 0;
@@ -199,11 +251,10 @@
             font-size: 14px;
             margin-top: 10px;
         }
-        /* 移动端响应式 */
+
+        /* 移动端适配 */
         @media (max-width: 768px) {
-            body {
-                padding: 20px 0;
-            }
+            .cursor-glow { display: none; }
             .header-card {
                 flex-direction: column;
                 text-align: center;
@@ -219,22 +270,26 @@
             }
             .content-card {
                 padding: 20px 16px;
-                /* 手机端禁用放大，防止错乱 */
                 transform: none !important;
+            }
+            .contact span:hover {
+                transform: none;
             }
         }
     </style>
 </head>
 <body>
+    <!-- 鼠标光圈 -->
+    <div class="cursor-glow"></div>
+
     <div class="container">
-        <!-- 中英切换按钮 -->
         <div class="lang-switch">
             <button class="lang-btn active" onclick="switchLang('zh')">中文</button>
             <button class="lang-btn" onclick="switchLang('en')">English</button>
         </div>
 
-        <!-- 头部信息 动态幻光浅蓝渐变 -->
-        <div class="header-card">
+        <!-- 个人信息 -->
+        <div id="info" class="header-card">
             <div class="avatar">
                 <img src="avatar.jpg" alt="个人证件照">
             </div>
@@ -244,19 +299,22 @@
                     <span class="en">Gan Xiaoyu</span>
                 </h1>
                 <div class="tagline">
-                    <span class="zh">2年工作经验 | 新媒体运营 | 跨境外贸相关实战经验</span>
-                    <span class="en">2 Years of Working Experience | New Media Operation | Practical Experience in Cross-border Foreign Trade</span>
+                    <span class="zh">2年工作经验 | 新媒体运营 | 跨境外贸实战经验</span>
+                    <span class="en">2 Years of Working Experience | New Media Operation | Practical Experience in Cross‑border Foreign Trade</span>
                 </div>
                 <div class="contact">
-                    <span>📞 电话：+86 13434348090</span>
-                    <span>💬 微信：ganCO3</span>
-                    <span>✉️ 邮箱：1794659368@qq.com</span>
+                    <span class="zh">📞 电话：+86 13434348090</span>
+                    <span class="en">📞 Phone: +86 13434348090</span>
+                    <span class="zh">💬 微信：ganCO3</span>
+                    <span class="en">💬 WeChat: ganCO3</span>
+                    <span class="zh">✉️ 邮箱：1794659368@qq.com</span>
+                    <span class="en">✉️ Email: 1794659368@qq.com</span>
                 </div>
             </div>
         </div>
 
         <!-- 教育经历 -->
-        <div class="content-card">
+        <div id="edu" class="content-card">
             <div class="section-title">
                 <span class="zh">教育经历</span>
                 <span class="en">Education</span>
@@ -267,121 +325,117 @@
                         <span class="zh">广州工商学院</span>
                         <span class="en">Guangzhou College of Technology and Business</span>
                     </div>
-                    <div class="item-time">2022.09-2024.06</div>
+                    <div class="item-time">2022.09‑2024.06</div>
                 </div>
                 <div class="item-sub">
                     <span class="zh">本科 | 音乐表演</span>
-                    <span class="en">Bachelor Degree | Music Performance</span>
+                    <span class="en">Bachelor’s Degree | Music Performance</span>
                 </div>
             </div>
         </div>
 
         <!-- 个人优势 -->
-        <div class="content-card">
+        <div id="strength" class="content-card">
             <div class="section-title">
                 <span class="zh">个人优势</span>
                 <span class="en">Personal Strengths</span>
             </div>
             <div class="item-content">
                 <ul class="zh">
-                    <li>精通剪映视频剪辑、飞书等基本办公协作软件</li>
-                    <li>能迅速适应新环境，保持乐观好奇心态以及良好自主学习能力</li>
-                    <li>粤语、英语可熟练作为工作语言，适配跨文化商务沟通、海外客户对接场景</li>
-                    <li>具备内容运营、用户增长及商业转化思维，拥有多平台内容创作、商务对接与跨境社媒运营复合型实战经验</li>
+                    <li>精通剪映视频剪辑、飞书等常用办公协作软件</li>
+                    <li>适应能力强，具备良好的自主学习能力，心态积极乐观</li>
+                    <li>粤语、英语可熟练用于工作，适配跨文化商务沟通、海外客户对接</li>
+                    <li>具备内容运营、用户增长及商业转化思维，拥有多平台内容创作、商务对接与跨境社媒运营的复合型实战经验</li>
                 </ul>
                 <ul class="en">
-                    <li>Proficient in CapCut video editing, Feishu and other basic office collaboration software.</li>
-                    <li>Able to adapt to new environments quickly with an optimistic mindset and strong self-learning ability.</li>
-                    <li>Fluent in Cantonese and English for professional use, suitable for cross-cultural business communication and overseas client liaison.</li>
-                    <li>Equipped with content operation, user growth and business conversion mindset, with compound practical experience in multi-platform content creation, business negotiation and cross-border social media operation.</li>
+                    <li>Proficient in CapCut video editing, Feishu and other common office collaboration software.</li>
+                    <li>Highly adaptable with strong self‑learning ability and a positive mindset.</li>
+                    <li>Fluent in Cantonese and English for professional scenarios, capable of cross‑cultural business communication and overseas client liaison.</li>
+                    <li>Equipped with content operation, user growth and business conversion awareness, with comprehensive practical experience in multi‑platform content creation, business communication and cross‑border social media operation.</li>
                 </ul>
             </div>
         </div>
 
         <!-- 工作经历 -->
-        <div class="content-card">
+        <div id="work" class="content-card">
             <div class="section-title">
                 <span class="zh">工作经历</span>
                 <span class="en">Work Experience</span>
             </div>
-
             <div class="timeline-item">
                 <div class="item-header">
                     <div class="item-title">
-                        <span class="zh">中国(广州)汽车出口批发基地 | 外贸业务员</span>
-                        <span class="en">China (Guangzhou) Auto Export Base | Foreign Trade Salesperson</span>
+                        <span class="zh">中国（广州）汽车出口批发基地 | 外贸业务员</span>
+                        <span class="en">China (Guangzhou) Auto Export Wholesale Base | Foreign Trade Salesperson</span>
                     </div>
-                    <div class="item-time">2026.01-至今</div>
+                    <div class="item-time">2026.01‑至今</div>
                 </div>
                 <div class="item-content">
                     <ul class="zh">
-                        <li>负责行业展会现场运维、客户咨询接待，开发和拓展海外意向客户</li>
-                        <li>自主运营海内外私域及海外社媒账号，涵盖TikTok、Instagram、Facebook、WhatsApp、微信视频号等平台</li>
-                        <li>精准转化线上潜在客户至线下洽谈，讲解车型，定制报价，跟进客户需求，推动业务成交与复购</li>
+                        <li>负责行业展会现场运营、客户咨询接待，开发拓展海外意向客户</li>
+                        <li>独立运营海内外私域及海外社媒账号，包括TikTok、Instagram、Facebook、WhatsApp、微信视频号等平台</li>
+                        <li>将线上潜在客户精准转化为线下洽谈，讲解车型、提供定制报价，跟进客户需求，促成业务成交与复购</li>
                     </ul>
                     <ul class="en">
-                        <li>Responsible for exhibition on-site operation and customer reception, developing and expanding overseas potential clients.</li>
-                        <li>Independently operate domestic and overseas private domain and social media accounts including TikTok, Instagram, Facebook, WhatsApp and WeChat Channels.</li>
-                        <li>Convert online potential clients into offline negotiations, introduce vehicle models, provide customized quotations, follow up demands, and drive deal closure and repeat purchases.</li>
+                        <li>Responsible for on‑site exhibition operation and customer reception, developing and expanding overseas potential clients.</li>
+                        <li>Independently manage domestic and overseas private‑domain and social media accounts including TikTok, Instagram, Facebook, WhatsApp and WeChat Channels.</li>
+                        <li>Convert online potential clients into offline negotiations, introduce vehicle models, provide customized quotations, follow up client demands, and facilitate deal closure and repeat purchases.</li>
                     </ul>
                 </div>
             </div>
-
             <div class="timeline-item">
                 <div class="item-header">
                     <div class="item-title">
                         <span class="zh">广州福湍人力资源服务有限公司 | 新媒体运营</span>
                         <span class="en">Guangzhou Futuan Human Resources Service Co., Ltd. | New Media Operator</span>
                     </div>
-                    <div class="item-time">2025.11-2026.01</div>
+                    <div class="item-time">2025.11‑2026.01</div>
                 </div>
                 <div class="item-content">
                     <ul class="zh">
-                        <li>统筹4个小红书账号0-1策划及日常运营，精准定位日语教育、留学研学、劳务派遣赛道，持续产出垂直优质内容</li>
+                        <li>统筹4个小红书账号从0到1策划及日常运营，聚焦日语教育、留学研学、劳务派遣赛道，持续产出垂直优质内容</li>
                         <li>负责微信公众号内容更新，持续挖掘高质量潜在客户线索，助力公司业务拓展</li>
                     </ul>
                     <ul class="en">
-                        <li>Managed the 0-1 planning and daily operation of 4 Xiaohongshu accounts, focusing on Japanese education, overseas study and labor dispatch with consistent high-quality vertical content output.</li>
-                        <li>Responsible for WeChat Official Account content updates, continuously exploring high-quality potential leads to support business expansion.</li>
+                        <li>Overseen the 0‑to‑1 planning and daily operation of 4 Xiaohongshu accounts, focusing on Japanese education, overseas study tours and labor dispatch with consistent high‑quality vertical content output.</li>
+                        <li>Responsible for WeChat Official Account content updates, continuously exploring high‑quality potential leads to boost business expansion.</li>
                     </ul>
                 </div>
             </div>
-
             <div class="timeline-item">
                 <div class="item-header">
                     <div class="item-title">
                         <span class="zh">广州星耀营教育科技有限公司 | 运营总监</span>
                         <span class="en">Guangzhou Xingyaoying Education Technology Co., Ltd. | Operation Director</span>
                     </div>
-                    <div class="item-time">2024.12-2025.06</div>
+                    <div class="item-time">2024.12‑2025.06</div>
                 </div>
                 <div class="item-content">
                     <ul class="zh">
-                        <li>负责运营青少年夏令营板块账号矩阵，实现官方账号涨粉<span class="highlight">8000+</span>，全平台账号总曝光量突破<span class="highlight">900w+</span></li>
-                        <li>策划产出视频、图文各类优质内容<span class="highlight">600+</span>条，搭建公私域流量运营链路，打通从流量获取、客户留存到招生转化的完整闭环</li>
+                        <li>负责青少年夏令营板块账号矩阵运营，实现官方账号涨粉<span class="highlight">8000+</span>，全平台账号总曝光量突破<span class="highlight">900万+</span></li>
+                        <li>策划产出视频、图文内容<span class="highlight">600+</span>条，搭建公私域流量链路，打通流量获取、客户留存至招生转化的完整闭环</li>
                     </ul>
                     <ul class="en">
-                        <li>Managed the account matrix for youth summer camps, acquiring <span class="highlight">8,000+</span> followers with total cross-platform exposure exceeding <span class="highlight">9 million+</span>.</li>
-                        <li>Planned and produced over <span class="highlight">600+</span> premium video and graphic contents, built public-private domain traffic links, and formed a full closed loop from traffic acquisition and user retention to enrollment conversion.</li>
+                        <li>Managed the account matrix for youth summer camps, gaining <span class="highlight">8,000+</span> followers for official accounts with total cross‑platform exposure exceeding <span class="highlight">9 million+</span>.</li>
+                        <li>Planned and produced over <span class="highlight">600</span> pieces of premium video and graphic content, built public‑private domain traffic links, and formed a full closed loop from traffic acquisition and user retention to enrollment conversion.</li>
                     </ul>
                 </div>
             </div>
-
             <div class="timeline-item">
                 <div class="item-header">
                     <div class="item-title">
-                        <span class="zh">广州市怀智广告策划有限公司 | 游戏营销</span>
+                        <span class="zh">广州市怀智广告策划有限公司 | 游戏营销专员</span>
                         <span class="en">Guangzhou Huaizhi Advertising Planning Co., Ltd. | Game Marketing Specialist</span>
                     </div>
-                    <div class="item-time">2024.06-2024.11</div>
+                    <div class="item-time">2024.06‑2024.11</div>
                 </div>
                 <div class="item-content">
                     <ul class="zh">
-                        <li>负责游戏用户裂变、新品预热、线上推广策划，制定落地执行方案，提升游戏曝光度与用户体量</li>
-                        <li>对接全网KOL/KOC资源，建联合作、跟进效果，支援社群运营，提升用户粘性与活跃度</li>
+                        <li>负责游戏用户裂变、新品预热、线上推广策划，制定落地执行方案，提升游戏曝光度与用户规模</li>
+                        <li>对接全网KOL/KOC资源，推进合作、跟进投放效果，协助社群运营，提升用户粘性与活跃度</li>
                     </ul>
                     <ul class="en">
-                        <li>Responsible for user growth, new game preheating and online promotion planning, formulating implementation plans to boost game exposure and user scale.</li>
+                        <li>Responsible for user growth, new game preheating and online promotion planning, formulating implementation plans to increase game exposure and user scale.</li>
                         <li>Cooperated with nationwide KOL/KOC resources, followed campaign performance, supported community operation, and improved user stickiness and activity.</li>
                     </ul>
                 </div>
@@ -389,88 +443,92 @@
         </div>
 
         <!-- 项目经历 -->
-        <div class="content-card">
+        <div id="project" class="content-card">
             <div class="section-title">
                 <span class="zh">项目经历</span>
                 <span class="en">Project Experience</span>
             </div>
-
             <div class="timeline-item">
                 <div class="item-header">
                     <div class="item-title">
                         <span class="zh">东南亚美食营销及跨境商业实践 | 新媒体运营</span>
-                        <span class="en">Southeast Asian Catering Marketing & Cross-border Business Practice | New Media Operation</span>
+                        <span class="en">Southeast Asian Catering Marketing & Cross‑border Business Practice | New Media Operation</span>
                     </div>
-                    <div class="item-time">2025.06-2025.09</div>
+                    <div class="item-time">2025.06‑2025.09</div>
                 </div>
                 <div class="item-content">
                     <ul class="zh">
-                        <li>负责泰国本地餐饮商户商务对接、美食营销推广，策划KOL/KOC联动营销活动，精准引流游客到店，带动门店到店量提升<span class="highlight">30%</span>，项目总营销曝光达<span class="highlight">51w+</span></li>
-                        <li>适配东南亚跨文化沟通场景，熟练完成跨境商务洽谈、活动统筹协调、项目落地推进与线下项目实操</li>
+                        <li>对接泰国本地餐饮商户开展商务合作与美食营销推广，策划KOL/KOC联动营销活动，精准引流游客到店，带动门店到店量提升<span class="highlight">30%</span>，项目总营销曝光达<span class="highlight">51万+</span></li>
+                        <li>适配东南亚跨文化沟通场景，熟练完成跨境商务洽谈、活动统筹、项目落地及线下实操工作</li>
                     </ul>
                     <ul class="en">
-                        <li>Handled business cooperation and marketing promotion for local Thai catering merchants, planned KOL/KOC joint campaigns, boosted store visitor flow by <span class="highlight">30%</span>, with total project exposure reaching <span class="highlight">510k+</span>.</li>
-                        <li>Adapted to Southeast Asian cross-cultural scenarios, proficient in cross-border business negotiation, event coordination, project execution and offline practical operation.</li>
+                        <li>Established business cooperation and food marketing promotion with local Thai catering merchants, planned KOL/KOC joint marketing campaigns, boosting store foot traffic by <span class="highlight">30%</span> with total project exposure reaching <span class="highlight">510,000+</span>.</li>
+                        <li>Adapted to Southeast Asian cross‑cultural communication scenarios, proficient in cross‑border business negotiation, event coordination, project implementation and offline operation.</li>
                     </ul>
                 </div>
             </div>
-
             <div class="timeline-item">
                 <div class="item-header">
                     <div class="item-title">
-                        <span class="zh">网易游戏内容创作双项目 | 内容运营</span>
-                        <span class="en">NetEase Dual Game Content Project | Content Operation</span>
+                        <span class="zh">网易游戏双项目内容创作 | 内容运营</span>
+                        <span class="en">NetEase Dual‑Game Content Creation Project | Content Operation</span>
                     </div>
-                    <div class="item-time">2024.06-2024.11</div>
+                    <div class="item-time">2024.06‑2024.11</div>
                 </div>
                 <div class="item-content">
                     <ul class="zh">
-                        <li>主导《漫威终极逆转》《射雕》两大游戏项目，紧跟热点策划优质内容，制定账号矩阵内容审核规范</li>
-                        <li>搭建标准化项目内容运营体系，撰写完善FAQ文档、宣发审核准则，规范内容产出与宣发全流程</li>
-                        <li>精准建联，孵化KOC，推进合作，扩大游戏生态影响力</li>
+                        <li>主导《漫威终极逆转》《射雕》两大游戏项目，结合热点策划优质内容，制定账号矩阵内容审核规范</li>
+                        <li>搭建标准化项目内容运营体系，撰写FAQ文档、宣发审核准则，规范内容产出与宣发全流程</li>
+                        <li>精准对接并孵化KOC，推进深度合作，扩大游戏生态影响力</li>
                     </ul>
                     <ul class="en">
-                        <li>Led two major game projects *Marvel Snap* and *The Legend of the Condor Heroes*, created trending content and formulated account matrix review standards.</li>
-                        <li>Established standardized content operation system, compiled FAQ and promotion guidelines to standardize content production and release.</li>
-                        <li>Connected and incubated high-quality KOC creators, promoted in-depth cooperation and expanded the influence of the game ecosystem.</li>
+                        <li>Led two major game projects *Marvel Snap* and *The Legend of the Condor Heroes*, created high‑quality trending content and formulated account matrix review standards.</li>
+                        <li>Established a standardized content operation system, compiled FAQs and promotion guidelines to standardize the whole process of content production and release.</li>
+                        <li>Connected and incubated high‑quality KOC creators, promoted in‑depth cooperation and expanded the influence of the game ecosystem.</li>
                     </ul>
                 </div>
             </div>
-
             <div class="timeline-item">
                 <div class="item-header">
                     <div class="item-title">
                         <span class="zh">个人自媒体运营 | 探店/内容达人</span>
                         <span class="en">Personal Media Operation | Lifestyle & Local Exploration Influencer</span>
                     </div>
-                    <div class="item-time">2022.01-至今</div>
+                    <div class="item-time">2022.01‑至今</div>
                 </div>
                 <div class="item-content">
                     <ul class="zh">
-                        <li>自主操盘多平台自媒体账号，完成小红书、大众点评、视频号0-1冷启动运营，打造账号“苦瓜阿姨”累计粉丝<span class="highlight">6000+</span>，视频号“小晴爱画画”粉丝<span class="highlight">1.8w+</span>，单条视频爆款浏览量高达<span class="highlight">78.8w</span></li>
-                        <li>独立完成选题策划、拍摄、后期剪辑、海报文案、平台宣发全流程工作，精准对接本地生活商户<span class="highlight">3000+</span>，具备丰富的商务合作、自媒体变现经验</li>
+                        <li>独立操盘多平台自媒体账号，完成小红书、大众点评、微信视频号0‑1冷启动；打造账号“苦瓜阿姨”粉丝<span class="highlight">6000+</span>，视频号“小晴爱画画”粉丝<span class="highlight">1.8万+</span>，单条爆款视频浏览量达<span class="highlight">78.8万</span></li>
+                        <li>独立完成选题策划、拍摄、后期剪辑、海报文案、平台宣发全流程；精准对接本地生活商户<span class="highlight">3000+</span>，具备丰富商务合作与自媒体变现经验</li>
                     </ul>
                     <ul class="en">
-                        <li>Independently launched and operated multi-platform accounts on Xiaohongshu, Dianping and WeChat Channel from scratch; built accounts with <span class="highlight">6,000+</span> and <span class="highlight">18,000+</span> followers, with a single viral video view count up to <span class="highlight">788k</span>.</li>
-                        <li>Managed the full workflow of topic planning, shooting, editing, copywriting and platform promotion independently, cooperated with over <span class="highlight">3,000</span> local merchants, with rich experience in business cooperation and media monetization.</li>
+                        <li>Independently launched and operated multi‑platform self‑media accounts on Xiaohongshu, Dianping and WeChat Channels from scratch; built accounts with <span class="highlight">6,000+</span> and <span class="highlight">18,000+</span> followers, with a single viral video view count up to <span class="highlight">788,000</span>.</li>
+                        <li>Managed the full workflow of topic planning, shooting, post‑editing, poster copywriting and platform promotion independently, cooperated with over <span class="highlight">3,000</span> local merchants, with rich experience in business cooperation and self‑media monetization.</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- 页脚 -->
         <div class="footer">
-            感谢阅读，期待跟您合作！
+            <span class="zh">感谢阅读，期待与您合作！</span>
+            <span class="en">Thank you for reading. Looking forward to cooperating with you!</span>
         </div>
+    </div>
 
 <script>
+// 鼠标光圈跟随
+const glow = document.querySelector('.cursor-glow');
+document.addEventListener('mousemove', (e) => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+});
+
 // 中英文切换
 function switchLang(lang){
     let zh = document.querySelectorAll('.zh');
     let en = document.querySelectorAll('.en');
     let btnZh = document.querySelectorAll('.lang-btn')[0];
     let btnEn = document.querySelectorAll('.lang-btn')[1];
-
     if(lang === 'zh'){
         zh.forEach(el=>el.style.display='block');
         en.forEach(el=>el.style.display='none');
@@ -483,7 +541,8 @@ function switchLang(lang){
         btnEn.classList.add('active');
     }
 }
-// 卡片滚动淡入动画
+
+// 卡片滚动淡入
 const cards = document.querySelectorAll('.content-card');
 const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -494,6 +553,5 @@ const observer = new IntersectionObserver(entries => {
 },{threshold:0.1});
 cards.forEach(card=>observer.observe(card));
 </script>
-
 </body>
 </html>
